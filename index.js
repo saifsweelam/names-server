@@ -1,7 +1,7 @@
 import http from 'node:http';
 import fs from 'node:fs';
 
-async function getNamas() {
+async function getNames() {
     return await fs.promises.readFile('names.txt', 'utf8');
 }
 
