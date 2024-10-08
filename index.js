@@ -1,15 +1,14 @@
 import http from 'node:http';
 import fs from 'node:fs';
+import{getNames,addName} from './index2.js'
 
-async function getNamas() {
-    return await fs.promises.readFile('names.txt', 'utf8');
+async function deletename (name) {
+    let allnames = await getNames();
+    let modifiednames= allnames.split('\n').filter((eachname)=>{
+        eachname!==name;
+    }).join('\n');
+    await fs.promises.writeFile('names.txt',modifiednames)
 }
-
-async function addName(name) {
-    const names = await getNamas();
-    await fs.promises.writeFile('names.txt', names + '\n' + name);
-}
-
 const server = http.createServer(async (req, res) => {
     if (req.url === '/names') {
         const names = await getNamas();
