@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { getNames,addName } from './server-functions';
+import { getNames,addName } from './server-functions.js';
 
 
 const server = http.createServer(async (req, res) => {
