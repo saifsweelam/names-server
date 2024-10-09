@@ -1,24 +1,36 @@
 import http from 'node:http';
-import fs from 'node:fs';
+import url from 'node:url';
+import { getNames,addName,deletename } from './server-functions.js';
 
-async function getNamas() {
-    return await fs.promises.readFile('names.txt', 'utf8');
-}
-
-async function addName(name) {
-    const names = await getNamas();
-    await fs.promises.writeFile('names.txt', names + '\n' + name);
-}
 
 const server = http.createServer(async (req, res) => {
-    if (req.url === '/names') {
-        const names = await getNamas();
+    const parsedUrl = url.parse(req.url, true);
+    const pathname = parsedUrl.pathname.slice(1);  
+    const query = parsedUrl.query;
+    const request = req;
+    const response = res;
+
+    if (pathname === 'names') {
+        const names = await getNames();
         res.end(names);
-    } else if (req.url === '/add') {
-        await addName('Alice');
+    } else if (pathname === 'add') {
+        if(!query.name) {
+            res.end(`Please provide a name,Name not found.`);
+        }
+        const name = JSON.parse(query.name);
+        await addName(name);
         res.end('Name added');
-    } else {
-        res.end('Not found');
+    }
+    else if(pathname === 'delete'){
+        if(!query.name) {
+            res.end(`Please provide a name to delete.`);
+        }
+        const name = JSON.parse(query.name);
+        await deletename(name,request,response);
+        res.end('Name deleted');
+    }
+    else {
+        res.end('404 Not Found');
     }
 });
 
